@@ -119,8 +119,30 @@ def add_product_row(title, sku, normal_price, discount_price, body_html, short_d
     # Pricing
     discount = price_or(discount_price)
     normal = price_or(normal_price)
-    row["Variant Price"] = discount if discount else (normal if normal else "")
-    row["Variant Compare At Price"] = normal if normal else ""
+
+    if discount and normal:
+        # If 2 prices
+        if float(discount) == float(normal):
+            # If the prices are the same — don't set compare at price
+            row["Variant Price"] = normal
+            row["Variant Compare At Price"] = ""
+        else:
+            # If the discount is less than the normal price
+            row["Variant Price"] = discount
+            row["Variant Compare At Price"] = normal
+    elif discount:
+        # There is only a discount price
+        row["Variant Price"] = discount
+        row["Variant Compare At Price"] = ""
+    elif normal:
+        # There is only a normal price
+        row["Variant Price"] = normal
+        row["Variant Compare At Price"] = ""
+    else:
+        # No prices
+        row["Variant Price"] = ""
+        row["Variant Compare At Price"] = ""
+
 
     # Core data
     row["Body HTML"] = clean_html(body_html)
